@@ -62,6 +62,11 @@ class Game():
         self.all_sprites.add(self.collideLine)
         self.viseLine = ViseLine((240, 0))
         self.all_sprites.add(self.viseLine)
+        
+        self.Profs = ["Domon","Dubail","Gaillard","Keller","Mischler","Mueller","Redon","Tharin","Wiser"]
+        self.dicoProfs = {"Redon": 10,"Domon":15,"Mischler": 50,"Tharin": 45,"Keller":25,"Gaillard":35,"Dubail":40,"Mueller":20,"Wiser":30}
+        #RIP Andrea Pfammater Tavel et Phillipe Pittet
+
 
 
         self.run()
@@ -80,7 +85,8 @@ class Game():
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pg.mouse.get_pos()
-                    new_fruit = Fruits(pos[0], 100, random.randint(10, 50), "joe")
+                    nom = random.choice(self.Profs)
+                    new_fruit = Fruits(pos[0], 100, self.dicoProfs[nom], nom)
                     self.all_Fruits.add(new_fruit)
                     self.space.add(new_fruit.circle_body, new_fruit.circle_shape)
                 

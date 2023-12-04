@@ -40,7 +40,7 @@ class Mur(pg.sprite.Sprite):
 class ViseLine(pg.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
-        self.image = pg.Surface((2, 600))
+        self.image = pg.Surface((4, 600))
         self.image.fill((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.center = pos
@@ -52,6 +52,6 @@ class CollideLine(pg.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
         self.image = pg.Surface((280, 2))
-        self.image.fill((0, 255, 0))
+        self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.center = pos
