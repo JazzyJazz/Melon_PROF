@@ -47,6 +47,9 @@ class Game():
         self.screenGame = pg.display.set_mode((480, 600))
         self.draw_options = DrawOptions(self.screenGame)
 
+        self.all_sprites = pg.sprite.Group()
+        self.all_Fruits = pg.sprite.Group()
+
         self.ground = Sol(self.space)
         self.space.add(self.ground.ground)
 
@@ -55,13 +58,11 @@ class Game():
         self.mur2 = Mur(380, self.space)
         self.space.add(self.mur2.wall)
 
-        self.all_Fruits = pg.sprite.Group()
+        self.collideLine = CollideLine((240, 200))
+        self.all_sprites.add(self.collideLine)
+        self.viseLine = ViseLine((240, 0))
+        self.all_sprites.add(self.viseLine)
 
-        for x in range(7):
-            self.all_Fruits.add(Fruits(random.randint(150, 330), random.randint(0, 300), random.randint(10, 50), "joe"))
-
-        for fruit in self.all_Fruits:
-            self.space.add(fruit.circle_body, fruit.circle_shape)
 
         self.run()
         pg.quit()
@@ -75,13 +76,34 @@ class Game():
             elif event.type == pg.QUIT:
                 self.running = False
                 self.playing = False
+            
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    pos = pg.mouse.get_pos()
+                    new_fruit = Fruits(pos[0], 100, random.randint(10, 50), "joe")
+                    self.all_Fruits.add(new_fruit)
+                    self.space.add(new_fruit.circle_body, new_fruit.circle_shape)
                 
     def update(self):
         self.space.step(1 / 60.0)
 
+        self.viseLine.update(pg.mouse.get_pos())
+
+        for fruit in self.all_Fruits:
+            if fruit.circle_body.position.y > 600 or fruit.circle_body.position.y < -100:
+                self.all_Fruits.remove(fruit)
+                self.space.remove(fruit.circle_body, fruit.circle_shape)
+            
+            if pg.sprite.collide_rect(self.collideLine, fruit):
+                print(fruit.circle_body.velocity.y)
+                if abs(fruit.circle_body.velocity.y) < 1e-3:
+                    self.playing = False
+
     def draw(self):
         self.screenGame.fill(background)
         self.space.debug_draw(self.draw_options)
+
+        self.all_sprites.draw(self.screenGame)
 
         for fruit in self.all_Fruits:
             fruit.draw(self.screenGame)
