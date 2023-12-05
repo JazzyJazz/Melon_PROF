@@ -12,15 +12,16 @@ CUR_PATH = os.path.dirname(__file__)
 class Fruits(pg.sprite.Sprite):
     def __init__(self, x, y, radius, nom):
         super().__init__()
+        radius *= 2
         self.image = pg.image.load(os.path.join(CUR_PATH, "Images", nom + ".png")).convert_alpha()
-        self.image = pg.transform.scale(self.image, (radius*2+2, radius*2+2))
+        self.image = pg.transform.scale(self.image, (radius*2+1, radius*2+1))
         self.circle_body = pm.Body(radius**2, 10)
         self.circle_body.position = (x, y)
         self.circle_shape = pm.Circle(self.circle_body, radius)
         self.circle_shape.friction = 1
         self.rect = self.image.get_rect()
         self.nom = nom
-        self.radius = radius
+        self.radius = int(radius/2)
     
     def draw(self, screen):
         self.rect.center = int(self.circle_body.position.x), int(self.circle_body.position.y)

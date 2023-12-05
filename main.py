@@ -128,17 +128,20 @@ class Game():
                     self.playing = False
 
             if pg.sprite.spritecollide(fruit, self.all_Fruits, False):
-                fruit2 = pg.sprite.spritecollide(fruit, self.all_Fruits, False)[0]
-                if fruit2 != fruit:
-                    if fruit2.nom == fruit.nom and fruit.nom != "Mischler":
-                        mid_point = ((fruit.rect.center[0] + fruit2.rect.center[0]) / 2, (fruit.rect.center[1] + fruit2.rect.center[1]) / 2)
-                        new_fruit = Fruits(mid_point[0], mid_point[1], fruit.radius+5, self.dicoRadius[fruit.radius+5])
-                        self.all_Fruits.add(new_fruit)
-                        self.space.add(new_fruit.circle_body, new_fruit.circle_shape)
-                        self.all_Fruits.remove(fruit)
-                        self.space.remove(fruit.circle_body, fruit.circle_shape)
-                        self.all_Fruits.remove(fruit2)
-                        self.space.remove(fruit2.circle_body, fruit2.circle_shape)
+                collided = False
+                for fruit2 in pg.sprite.spritecollide(fruit, self.all_Fruits, False):
+                    if fruit2 != fruit and not collided and (fruit2.circle_body in self.space.bodies and fruit.circle_body in self.space.bodies):
+                        if fruit2.nom == fruit.nom and fruit.nom != "Mischler":
+                            mid_point = ((fruit.rect.center[0] + fruit2.rect.center[0]) / 2, (fruit.rect.center[1] + fruit2.rect.center[1]) / 2)
+                            new_fruit = Fruits(mid_point[0], mid_point[1], fruit.radius+5, self.dicoRadius[fruit.radius+5])
+                            self.all_Fruits.add(new_fruit)
+                            self.space.add(new_fruit.circle_body, new_fruit.circle_shape)
+                            self.all_Fruits.remove(fruit)
+                            self.space.remove(fruit.circle_body, fruit.circle_shape)
+                            self.all_Fruits.remove(fruit2)
+                            self.space.remove(fruit2.circle_body, fruit2.circle_shape)
+                            collided = True
+                            break
 
     def draw(self):
         self.space.debug_draw(self.draw_options)
@@ -147,11 +150,6 @@ class Game():
 
         for fruit in self.all_Fruits:
             fruit.draw(self.dicoBlackboard)
-
-            # draw point at center of circle
-            pg.draw.circle(self.screenGame, (0, 255, 0), fruit.rect.center, 2)
-            pg.draw.circle(self.screenGame, (0, 0, 255), (int(fruit.circle_body.position.x), int(fruit.circle_body.position.y)), fruit.radius, 1)
-            pg.draw.circle(self.screenGame, (255, 0, 255), (int(fruit.circle_body.position.x), int(fruit.circle_body.position.y)), fruit.radius+5, 1)
 
         pg.display.flip()
     
