@@ -1,5 +1,6 @@
 from typing import Any
 import pygame as pg
+from pygame.sprite import _Group
 import pymunk as pm
 vec = pg.Vector2
 import random
@@ -57,3 +58,8 @@ class CollideLine(pg.sprite.Sprite):
         self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.center = pos
+
+class Blackboard(pg.sprite.Sprite):
+    def __init__(self, pos, nom):
+        super().__init__()
+        self.image = pg.image.load(os.path.join(CUR_PATH, "Images", nom + ".png")).convert_alpha()

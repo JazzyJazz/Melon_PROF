@@ -44,9 +44,6 @@ class Game():
 
         self.calibri_font = pg.font.SysFont("Calibri", 25)
         self.clock = pg.time.Clock()
-        self.screenGame = pg.display.set_mode((480, 600))
-        self.draw_options = DrawOptions(self.screenGame)
-
         self.all_sprites = pg.sprite.Group()
         self.all_Fruits = pg.sprite.Group()
 
@@ -69,6 +66,9 @@ class Game():
         self.dicoProfs = {"Redon": 10,"Domon":15,"Mischler": 50,"Tharin": 45,"Keller":25,"Gaillard":35,"Dubail":40,"Mueller":20,"Wiser":30}
         self.dicoRadius = {10:"Redon", 15:"Domon", 50:"Mischler", 45:"Tharin", 25:"Keller", 35:"Gaillard", 40:"Dubail", 20:"Mueller", 30:"Wiser"}
         self.nom = random.choice(self.Profs[0:4])
+
+        self.Mur = ["blackboard"]
+        self.dicoBlackboard = {"blackboard"}
 
         next_fruit = Fruits(240, 100, self.dicoProfs[self.nom], self.nom)
         self.all_sprites.add(next_fruit)
@@ -141,13 +141,12 @@ class Game():
                         self.space.remove(fruit2.circle_body, fruit2.circle_shape)
 
     def draw(self):
-        self.screenGame.fill(background)
         self.space.debug_draw(self.draw_options)
 
-        self.all_sprites.draw(self.screenGame)
+        self.all_sprites.draw(self.dicoBlackboard)
 
         for fruit in self.all_Fruits:
-            fruit.draw(self.screenGame)
+            fruit.draw(self.dicoBlackboard)
 
             # draw point at center of circle
             pg.draw.circle(self.screenGame, (0, 255, 0), fruit.rect.center, 2)
