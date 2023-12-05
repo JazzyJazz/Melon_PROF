@@ -60,11 +60,17 @@ class Game():
 
         self.collideLine = CollideLine((240, 200))
         self.all_sprites.add(self.collideLine)
-        self.viseLine = ViseLine((240, 0))
+        self.viseLine = ViseLine((240, 300))
         self.all_sprites.add(self.viseLine)
+
+        self.cooldown = False
         
         self.Profs = ["Domon","Dubail","Gaillard","Keller","Mischler","Mueller","Redon","Tharin","Wiser"]
         self.dicoProfs = {"Redon": 10,"Domon":15,"Mischler": 50,"Tharin": 45,"Keller":25,"Gaillard":35,"Dubail":40,"Mueller":20,"Wiser":30}
+        self.nom = random.choice(self.Profs)
+
+        next_fruit = Fruits(240, 100, self.dicoProfs[self.nom], self.nom)
+        self.all_sprites.add(next_fruit)
         #RIP Andrea Pfammater Tavel et Phillipe Pittet
 
 
@@ -83,26 +89,42 @@ class Game():
                 self.playing = False
             
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if event.button == 1 and not self.cooldown:
                     pos = pg.mouse.get_pos()
-                    nom = random.choice(self.Profs)
-                    new_fruit = Fruits(pos[0], 100, self.dicoProfs[nom], nom)
+                    if not pg.mouse.get_pos()[0] > 100:
+                        pos = (101, 100)
+                    elif not pg.mouse.get_pos()[0] < 380:
+                        pos = (379, 100)
+                    self.all_sprites.remove(self.all_sprites.sprites()[-1])
+                    new_fruit = Fruits(pos[0], 100, self.dicoProfs[self.nom], self.nom)
                     self.all_Fruits.add(new_fruit)
                     self.space.add(new_fruit.circle_body, new_fruit.circle_shape)
+                    self.cooldown = True
+                    self.cooldown_time = pg.time.get_ticks()
+
+                    self.nom = random.choice(self.Profs)
+                    next_fruit = Fruits(pos[0], 100, self.dicoProfs[self.nom], self.nom)
+                    next_fruit.image = next_fruit.image.convert_alpha(0.5)
+                    self.all_sprites.add(next_fruit)
                 
     def update(self):
         self.space.step(1 / 60.0)
 
-        self.viseLine.update(pg.mouse.get_pos())
+        if pg.mouse.get_pos()[0] > 100 and pg.mouse.get_pos()[0] < 380:
+            self.viseLine.update(pg.mouse.get_pos())
+            self.all_sprites.sprites()[-1].rect.center = (pg.mouse.get_pos()[0], 100)
+
+        if self.cooldown:
+            if self.tick - self.cooldown_time > 1000:
+                self.cooldown = False
 
         for fruit in self.all_Fruits:
             if fruit.circle_body.position.y > 600 or fruit.circle_body.position.y < -100:
                 self.all_Fruits.remove(fruit)
                 self.space.remove(fruit.circle_body, fruit.circle_shape)
             
-            if pg.sprite.collide_rect(self.collideLine, fruit):
-                print(fruit.circle_body.velocity.y)
-                if abs(fruit.circle_body.velocity.y) < 1e-3:
+            if fruit.rect.center[1] < 160:
+                if abs(fruit.circle_body.velocity.y) < 1e-2:
                     self.playing = False
 
     def draw(self):
