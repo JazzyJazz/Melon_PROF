@@ -12,15 +12,17 @@ class Fruits(pg.sprite.Sprite):
     def __init__(self, x, y, radius, nom):
         super().__init__()
         self.image = pg.image.load(os.path.join(CUR_PATH, "Images", nom + ".png")).convert_alpha()
-        self.image = pg.transform.scale(self.image, (radius*2, radius*2))
+        self.image = pg.transform.scale(self.image, (radius*2+2, radius*2+2))
         self.circle_body = pm.Body(radius**2, 10)
         self.circle_body.position = (x, y)
         self.circle_shape = pm.Circle(self.circle_body, radius)
         self.circle_shape.friction = 1
         self.rect = self.image.get_rect()
+        self.nom = nom
+        self.radius = radius
     
     def draw(self, screen):
-        self.rect.center = int(self.circle_body.position.x - self.image.get_width() / 2), int(self.circle_body.position.y - self.image.get_height() / 2)
+        self.rect.center = int(self.circle_body.position.x), int(self.circle_body.position.y)
         rotated_image = pg.transform.rotate(self.image, -self.circle_body.angle * 180 / 3.14)
         rotated_rect = rotated_image.get_rect(center=(self.circle_body.position.x, self.circle_body.position.y))
         screen.blit(rotated_image, rotated_rect.topleft)

@@ -65,9 +65,10 @@ class Game():
 
         self.cooldown = False
         
-        self.Profs = ["Domon","Dubail","Gaillard","Keller","Mischler","Mueller","Redon","Tharin","Wiser"]
+        self.Profs = ["Domon","Redon","Mueller","Keller", "Dubail","Gaillard","Mischler","Tharin","Wiser"]
         self.dicoProfs = {"Redon": 10,"Domon":15,"Mischler": 50,"Tharin": 45,"Keller":25,"Gaillard":35,"Dubail":40,"Mueller":20,"Wiser":30}
-        self.nom = random.choice(self.Profs)
+        self.dicoRadius = {10:"Redon", 15:"Domon", 50:"Mischler", 45:"Tharin", 25:"Keller", 35:"Gaillard", 40:"Dubail", 20:"Mueller", 30:"Wiser"}
+        self.nom = random.choice(self.Profs[0:4])
 
         next_fruit = Fruits(240, 100, self.dicoProfs[self.nom], self.nom)
         self.all_sprites.add(next_fruit)
@@ -102,9 +103,8 @@ class Game():
                     self.cooldown = True
                     self.cooldown_time = pg.time.get_ticks()
 
-                    self.nom = random.choice(self.Profs)
+                    self.nom = random.choice(self.Profs[0:4])
                     next_fruit = Fruits(pos[0], 100, self.dicoProfs[self.nom], self.nom)
-                    next_fruit.image = next_fruit.image.convert_alpha(0.5)
                     self.all_sprites.add(next_fruit)
                 
     def update(self):
@@ -127,6 +127,19 @@ class Game():
                 if abs(fruit.circle_body.velocity.y) < 1e-2:
                     self.playing = False
 
+            if pg.sprite.spritecollide(fruit, self.all_Fruits, False):
+                fruit2 = pg.sprite.spritecollide(fruit, self.all_Fruits, False)[0]
+                if fruit2 != fruit:
+                    if fruit2.nom == fruit.nom and fruit.nom != "Mischler":
+                        mid_point = ((fruit.rect.center[0] + fruit2.rect.center[0]) / 2, (fruit.rect.center[1] + fruit2.rect.center[1]) / 2)
+                        new_fruit = Fruits(mid_point[0], mid_point[1], fruit.radius+5, self.dicoRadius[fruit.radius+5])
+                        self.all_Fruits.add(new_fruit)
+                        self.space.add(new_fruit.circle_body, new_fruit.circle_shape)
+                        self.all_Fruits.remove(fruit)
+                        self.space.remove(fruit.circle_body, fruit.circle_shape)
+                        self.all_Fruits.remove(fruit2)
+                        self.space.remove(fruit2.circle_body, fruit2.circle_shape)
+
     def draw(self):
         self.screenGame.fill(background)
         self.space.debug_draw(self.draw_options)
@@ -135,6 +148,11 @@ class Game():
 
         for fruit in self.all_Fruits:
             fruit.draw(self.screenGame)
+
+            # draw point at center of circle
+            pg.draw.circle(self.screenGame, (0, 255, 0), fruit.rect.center, 2)
+            pg.draw.circle(self.screenGame, (0, 0, 255), (int(fruit.circle_body.position.x), int(fruit.circle_body.position.y)), fruit.radius, 1)
+            pg.draw.circle(self.screenGame, (255, 0, 255), (int(fruit.circle_body.position.x), int(fruit.circle_body.position.y)), fruit.radius+5, 1)
 
         pg.display.flip()
     
