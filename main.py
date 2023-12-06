@@ -146,6 +146,8 @@ class Game():
 
     def draw(self):
         self.screengame.fill(background)
+        image = pg.image.load(os.path.join(CUR_PATH, "Images", "blackboard.png"))
+        self.screengame.blit(pg.transform.scale(image, (480, 600)), (0, 0))
         self.space.debug_draw(self.draw_options)
 
         self.all_sprites.draw(self.screengame)
