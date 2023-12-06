@@ -1,6 +1,4 @@
-from typing import Any
 import pygame as pg
-from pygame.sprite import _Group
 import pymunk as pm
 vec = pg.Vector2
 import random
@@ -14,10 +12,10 @@ class Fruits(pg.sprite.Sprite):
         super().__init__()
         radius *= 2
         self.image = pg.image.load(os.path.join(CUR_PATH, "Images", nom + ".png")).convert_alpha()
-        self.image = pg.transform.scale(self.image, (radius*2+1, radius*2+1))
+        self.image = pg.transform.scale(self.image, (radius+1, radius+1))
         self.circle_body = pm.Body(radius**2, 10)
         self.circle_body.position = (x, y)
-        self.circle_shape = pm.Circle(self.circle_body, radius)
+        self.circle_shape = pm.Circle(self.circle_body, int(radius/2))
         self.circle_shape.friction = 1
         self.rect = self.image.get_rect()
         self.nom = nom
